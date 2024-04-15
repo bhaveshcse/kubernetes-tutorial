@@ -69,7 +69,8 @@ kubeadm token create --print-join-command
 2. Paste the join command you got from the master node and append `--v=5` at the end.
 
    ```bash
-   sudo your-token --v=5
+   sudo kubeadm join 172.31.84.53:6443 --token 0aln5f.6ih8v1xwwryjjk0l \
+        --discovery-token-ca-cert-hash sha256:3f2cbfd9ea13bb4579c073d4e64d1b09cf941339ac2dcd14e407d23f7bb83bea
    ```
 
    > Use `sudo` before the token.
