@@ -1,7 +1,7 @@
 # kubernetes-tutorial
 There are three ways to work with Kubernetes:<br>
 1. Play with Kubernetes (https://labs.play-with-k8s.com/)
-2. Kubernetes Adm (Master & Worker node)
+2. Kubeadm (Master & Worker node)
 3. Minikube
 
 # Minikube Installation on Ubuntu
