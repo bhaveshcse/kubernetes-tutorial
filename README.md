@@ -136,3 +136,6 @@ kubectl api-resources – List the API resources that are available.
 kubectl api-versions – List the API versions that are available.
 
 -A – List pods, services, daemonsets, deployments, replicasets, statefulsets, jobs, and CronJobs in all namespaces, not custom resource types. Note the alias for --all-namespaces is -A
+
+kubectl get all --all-namespaces
+
