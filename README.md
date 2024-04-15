@@ -113,3 +113,26 @@ minikube delete
 ```
 
 That's it! You've successfully installed Minikube on Ubuntu, and you can now start deploying Kubernetes applications for development and testing
+
+# Cluster Management and Context
+Cluster management refers to querying information about the K8S cluster itself.
+
+kubectl cluster-info – Display endpoint information about the master and services in the cluster.
+
+kubectl version – Display the Kubernetes version running on the client and server.
+
+kubectl config view – Get the configuration of the cluster.
+
+kubectl config view -o jsonpath='{.users[*].name}' – Get a list of users.
+
+kubectl config current-context – Display the current context.
+
+kubectl config get-contexts – Display a list of contexts.
+
+kubectl config use-context <cluster name> – Set the default context.
+
+kubectl api-resources – List the API resources that are available.
+
+kubectl api-versions – List the API versions that are available.
+
+-A – List pods, services, daemonsets, deployments, replicasets, statefulsets, jobs, and CronJobs in all namespaces, not custom resource types. Note the alias for --all-namespaces is -A
