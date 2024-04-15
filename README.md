@@ -8,11 +8,9 @@ There are three ways to work with Kubernetes:<br>
 Minikube is an open source tool that allows you to set up a single-node Kubernetes cluster on your local machine. The cluster is run inside a virtual machine and includes Docker, allowing you to run containers inside the node.
 
 # Minikube Installation Guide for Ubuntu
-
 This guide provides step-by-step instructions for installing Minikube on Ubuntu. Minikube allows you to run a single-node Kubernetes cluster locally for development and testing purposes.
 
 ## Pre-requisites
-
 * Ubuntu OS
 * sudo privileges
 * Internet access
@@ -74,7 +72,6 @@ Make it executable and move it into your path:
 
 ```bash
 chmod +x kubectl
-sudo mv kubectl /usr/local/bin/
 ```
 
 ## Step 6: Start Minikube
