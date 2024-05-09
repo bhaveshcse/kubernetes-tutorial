@@ -1,110 +1,52 @@
-# Kubeadm Installation Guide
+---------------------------------------- Kubeadm Installation ------------------------------------------ 
 
-This guide outlines the steps needed to set up a Kubernetes cluster using kubeadm.
+-------------------------------------- Both Master & Worker Node ---------------------------------------
+sudo su
+apt update -y
+apt install docker.io -y
 
-## Pre-requisites
+systemctl start docker
+systemctl enable docker
 
-- Ubuntu OS (Xenial or later)
-- sudo privileges
-- Internet access
-- t2.medium instance type or higher
+curl -fsSL "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg
+echo 'deb https://packages.cloud.google.com/apt kubernetes-xenial main' > /etc/apt/sources.list.d/kubernetes.list
 
----
+apt update -y
+apt install kubeadm=1.20.0-00 kubectl=1.20.0-00 kubelet=1.20.0-00 -y
 
-## AWS Setup
+# To connect with cluster execute above commands on master node and worker node respectively
+--------------------------------------------- Master Node -------------------------------------------------- 
+sudo su
+kubeadm init
 
-- Make sure your all instance are in same **Security group**.
-- Expose port **6443** in the **Security group**, so that worker nodes can join the cluster.
+# To start using your cluster, you need to run the following as a regular user:
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
----
-
-## Execute on Both "Master" & "Worker Node"
-
-Run the following commands on both the master and worker nodes to prepare them for kubeadm.
-
-```bash
-sudo apt-get update -y
-sudo apt-get install -y software-properties-common curl apt-transport-https ca-certificates gpg
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
-sudo apt-get update
-sudo apt-get install -y kubelet kubeadm kubectl
-sudo systemctl enable --now kubelet
-sudo apt-get install docker.io
-```
-
----
-
-## Execute ONLY on "Master Node"
-
-```bash
-sudo kubeadm config images pull
-
-sudo kubeadm init
-
-mkdir -p "$HOME"/.kube
-sudo cp -i /etc/kubernetes/admin.conf "$HOME"/.kube/config
-sudo chown "$(id -u)":"$(id -g)" "$HOME"/.kube/config
-
-
-# Network Plugin = calico
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.0/manifests/calico.yaml
+# Alternatively, if you are the root user, you can run:
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+  
+kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 
 kubeadm token create --print-join-command
-```
+  
 
-- You will get `kubeadm token`, **Copy it**.
-  <img src="https://raw.githubusercontent.com/faizan35/kubernetes_cluster_with_kubeadm/main/Img/kubeadm-token.png" width="75%">
+------------------------------------------- Worker Node ------------------------------------------------ 
+sudo su
+kubeadm reset pre-flight checks
+-----> Paste the Join command on worker node and append `--v=5` at end
 
----
+#To verify cluster connection  
+---------------------------------------on Master Node-----------------------------------------
 
-## Execute on ALL of your Worker Node's
+kubectl get nodes 
 
-1. Perform pre-flight checks
 
-   ```bash
-   sudo kubeadm reset pre-flight checks
-   ```
-
-2. Paste the join command you got from the master node and append `--v=5` at the end.
-
-   ```bash
-   sudo kubeadm join 172.31.84.53:6443 --token 0aln5f.6ih8v1xwwryjjk0l \
-        --discovery-token-ca-cert-hash sha256:3f2cbfd9ea13bb4579c073d4e64d1b09cf941339ac2dcd14e407d23f7bb83bea
-   ```
-
-   > Use `sudo` before the token.
-
----
-
-## Verify Cluster Connection
-
-**On Master Node:**
-
-```bash
-kubectl get nodes
-```
-
-   <img src="https://raw.githubusercontent.com/faizan35/kubernetes_cluster_with_kubeadm/main/Img/nodes-connected.png" width="70%">
-
----
-
-## Optional: Labeling Nodes
-
-If you want to label worker nodes, you can use the following command:
-
-```bash
-kubectl label node <node-name> node-role.kubernetes.io/worker=worker
-```
-
----
-
-## Optional: Test a demo Pod
-
-If you want to test a demo pod, you can use the following command:
-
-```bash
-kubectl run hello-world-pod --image=busybox --restart=Never --command -- sh -c "echo 'Hello, World' && sleep 3600"
-```
-
-<kbd>![image](https://github.com/paragpallavsingh/kubernetes-kickstarter/assets/40052830/bace1884-bbba-4e2f-8fb2-83bbba819d08)</kbd>
+# worker
+# kubeadm join 172.31.84.66:6443 --token n4tfb4.grmew1s1unug0get     --discovery-token-ca-cert-hash sha256:c3fda2eaf5960bed4320d8175dc6a73b1556795b1b7f5aadc07642ed85c51069 --v=5
+# kubeadm reset pre-flight checks
+# kubeadm token create --print-join-command
+# kubectl label node ip-172-31-20-246 node-role.kubernetes.io/worker=worker
+# kubectl label nodes ip-172-31-92-99 kubernetes.io/role=worker
+# kubectl config set-context $(kubectl config current-context) --namespace=dev
